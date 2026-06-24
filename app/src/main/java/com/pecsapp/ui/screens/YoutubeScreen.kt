@@ -11,12 +11,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,12 +38,13 @@ fun YoutubeScreen(
     initialUrl: String?,
     initialSecond: Float,
     onPlaybackProgress: (url: String, second: Float) -> Unit,
+    onCloseRequested: () -> Unit,
     onTimerFinished: () -> Unit
 ) {
     // Timer de 10 minutos = 600 segundos
     var secondsLeft by rememberSaveable { mutableIntStateOf(600) }
     var watchedSecond by rememberSaveable { mutableFloatStateOf(initialSecond.coerceAtLeast(0f)) }
-    val defaultVideoId = "M7lc1UVf-VE"
+    val defaultVideoId = "_xPLqmGmHfg"
     val savedVideoId = rememberSaveable(initialUrl) { extractYoutubeVideoId(initialUrl) ?: defaultVideoId }
     var currentVideoId by rememberSaveable { mutableStateOf(savedVideoId) }
     val resumeStartAt = rememberSaveable(initialSecond) { initialSecond.toInt().coerceAtLeast(0) }
@@ -168,6 +176,27 @@ fun YoutubeScreen(
                 .background(Color.Black.copy(alpha = 0.45f))
                 .padding(horizontal = 8.dp, vertical = 4.dp)
         )
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 8.dp)
+                .size(34.dp)
+                .background(Color.Black.copy(alpha = 0.22f), CircleShape)
+                .combinedClickable(
+                    onClick = { onCloseRequested() },
+                    onLongClick = { onCloseRequested() }
+                )
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Volver a imágenes",
+                tint = Color.White.copy(alpha = 0.42f),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(4.dp)
+            )
+        }
     }
 }
 

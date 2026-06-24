@@ -229,7 +229,7 @@ fun FloatingYoutubeButton(
             .clickable { onClick() },
         shape = RoundedCornerShape(size / 5),
         elevation = CardDefaults.cardElevation(10.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFE53935).copy(alpha = 0.95f))
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE53935))
     ) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Image(

@@ -29,8 +29,6 @@ fun AdminScreen(
     viewModel: PecViewModel,
     maxImages: Int,
     onMaxImagesChanged: (Int) -> Unit,
-    youtubeCycles: Int,
-    onYoutubeCyclesChanged: (Int) -> Unit,  // 👈 coma aqui
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -105,15 +103,9 @@ fun AdminScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "Ciclos de YouTube por día: $youtubeCycles",
-                    color = Color.White,
-                    fontSize = 16.sp
-                )
-                Slider(
-                    value = youtubeCycles.toFloat(),
-                    onValueChange = { onYoutubeCyclesChanged(it.toInt()) },
-                    valueRange = 1f..20f,
-                    steps = 18
+                    text = "YouTube: acceso permanente (sin límite)",
+                    color = Color(0xFFB0B0C8),
+                    fontSize = 14.sp
                 )
             }
         }

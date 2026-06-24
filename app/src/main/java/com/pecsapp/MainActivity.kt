@@ -37,14 +37,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             PecsAppTheme {
                 var maxImages by remember { mutableIntStateOf(4) }
-                var youtubeCycles by remember { mutableIntStateOf(5) }
 
                 AppNavigation(
                     viewModel = viewModel,
                     maxImages = maxImages,
-                    onMaxImagesChanged = { maxImages = it },
-                    youtubeCycles = youtubeCycles,
-                    onYoutubeCyclesChanged = { youtubeCycles = it }
+                    onMaxImagesChanged = { maxImages = it }
                 )
             }
         }

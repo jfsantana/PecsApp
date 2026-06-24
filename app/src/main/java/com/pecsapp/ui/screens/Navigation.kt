@@ -23,9 +23,7 @@ private const val SCREEN_ADMIN = "admin"
 fun AppNavigation(
     viewModel: PecViewModel,
     maxImages: Int,
-    onMaxImagesChanged: (Int) -> Unit,
-    youtubeCycles: Int,
-    onYoutubeCyclesChanged: (Int) -> Unit
+    onMaxImagesChanged: (Int) -> Unit
 ) {
     var currentScreenKey by rememberSaveable { mutableStateOf(SCREEN_CHILD) }
     var youtubeUrl by rememberSaveable { mutableStateOf<String?>(null) }
@@ -38,9 +36,7 @@ fun AppNavigation(
                 viewModel = viewModel,
                 maxImages = maxImages,
                 onYoutubeRequested = {
-                    if (viewModel.consumeYoutubeCycle()) {
-                        currentScreenKey = SCREEN_YOUTUBE
-                    }
+                    currentScreenKey = SCREEN_YOUTUBE
                 },
                 onNeedNotified = { _ ->
                     // Por ahora solo registra el tap
@@ -59,6 +55,9 @@ fun AppNavigation(
                     youtubeUrl = url
                     youtubeSecond = second
                 },
+                onCloseRequested = {
+                    currentScreenKey = SCREEN_CHILD
+                },
                 onTimerFinished = {
                     currentScreenKey = SCREEN_CHILD
                 }
@@ -70,8 +69,6 @@ fun AppNavigation(
                 viewModel = viewModel,
                 maxImages = maxImages,
                 onMaxImagesChanged = onMaxImagesChanged,
-                youtubeCycles = youtubeCycles,
-                onYoutubeCyclesChanged = onYoutubeCyclesChanged,
                 onBack = {
                     currentScreenKey = SCREEN_CHILD
                 }

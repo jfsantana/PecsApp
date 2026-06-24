@@ -16,8 +16,8 @@ class PecViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PecImageRepository
     val images: StateFlow<List<PecImage>>
 
-    // Cuantos ciclos de YouTube quedan hoy
-    var youtubeCyclesLeft: Int = 5
+    // YouTube queda habilitado de forma permanente.
+    var youtubeCyclesLeft: Int = Int.MAX_VALUE
 
     init {
         val dao = AppDatabase.getDatabase(application).pecImageDao()
@@ -55,11 +55,6 @@ class PecViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun consumeYoutubeCycle(): Boolean {
-        return if (youtubeCyclesLeft > 0) {
-            youtubeCyclesLeft--
-            true
-        } else {
-            false
-        }
+        return true
     }
 }
