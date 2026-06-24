@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlin.time.Duration.Companion.seconds
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -43,6 +44,7 @@ fun YoutubeScreen(
         buildWatchUrl(currentVideoId, resumeStartAt)
     }
     var currentPageUrl by rememberSaveable { mutableStateOf(initialWatchUrl) }
+    var webViewRef by remember { mutableStateOf<WebView?>(null) }
 
     LaunchedEffect(Unit) {
         while (secondsLeft > 0) {
@@ -51,6 +53,21 @@ fun YoutubeScreen(
             watchedSecond += 1f
         }
         onTimerFinished()
+    }
+
+    // Captura continua de la URL real para no perder cambios de video dentro de YouTube.
+    LaunchedEffect(webViewRef) {
+        while (isActive) {
+            delay(2.seconds)
+            val activeUrl = webViewRef?.url
+            if (!activeUrl.isNullOrBlank()) {
+                currentPageUrl = activeUrl
+                val activeVideoId = extractYoutubeVideoId(activeUrl)
+                if (!activeVideoId.isNullOrBlank()) {
+                    currentVideoId = activeVideoId
+                }
+            }
+        }
     }
 
     val minutes = secondsLeft / 60
@@ -80,6 +97,17 @@ fun YoutubeScreen(
                     }
                     webChromeClient = WebChromeClient()
                     webViewClient = object : WebViewClient() {
+                        override fun doUpdateVisitedHistory(view: WebView?, url: String?, isReload: Boolean) {
+                            super.doUpdateVisitedHistory(view, url, isReload)
+                            if (!url.isNullOrBlank()) {
+                                currentPageUrl = url
+                                val detectedId = extractYoutubeVideoId(url)
+                                if (!detectedId.isNullOrBlank()) {
+                                    currentVideoId = detectedId
+                                }
+                            }
+                        }
+
                         override fun onReceivedError(
                             view: WebView?,
                             request: WebResourceRequest?,
@@ -116,10 +144,14 @@ fun YoutubeScreen(
                         }
                     }
                     loadUrl(currentPageUrl)
+                    webViewRef = this
                 }
             },
             modifier = Modifier.fillMaxSize(),
             onRelease = { webView ->
+                if (webViewRef === webView) {
+                    webViewRef = null
+                }
                 webView.stopLoading()
                 webView.destroy()
             }
