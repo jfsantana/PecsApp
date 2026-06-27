@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,7 +34,10 @@ fun AdminScreen(
 ) {
     val context = LocalContext.current
     val images by viewModel.images.collectAsState()
+    val alertSoundOptions by viewModel.alertSoundOptions.collectAsState()
+    val selectedAlertSoundKey by viewModel.selectedAlertSoundKey.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
+    var showAlertSoundMenu by remember { mutableStateOf(false) }
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     var newImageLabel by remember { mutableStateOf("") }
 
@@ -106,6 +110,57 @@ fun AdminScreen(
                     text = "YouTube: acceso permanente (sin límite)",
                     color = Color(0xFFB0B0C8),
                     fontSize = 14.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Sonido de alerta",
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Box {
+                    OutlinedButton(
+                        onClick = { showAlertSoundMenu = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        val selectedLabel = alertSoundOptions
+                            .firstOrNull { it.key == selectedAlertSoundKey }
+                            ?.label
+                            ?: "Seleccionar sonido"
+                        Text(selectedLabel)
+                    }
+
+                    DropdownMenu(
+                        expanded = showAlertSoundMenu,
+                        onDismissRequest = { showAlertSoundMenu = false }
+                    ) {
+                        alertSoundOptions.forEach { option ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(
+                                        if (option.key == selectedAlertSoundKey) {
+                                            "✓ ${option.label}"
+                                        } else {
+                                            option.label
+                                        }
+                                    )
+                                },
+                                onClick = {
+                                    viewModel.updateAlertSound(option.key)
+                                    showAlertSoundMenu = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                Text(
+                    text = "Al elegir uno, escucharás una vista previa",
+                    color = Color(0xFFB0B0C8),
+                    fontSize = 12.sp
                 )
             }
         }
